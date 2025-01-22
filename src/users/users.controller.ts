@@ -9,6 +9,7 @@ import {
   LoginSchema,
 } from './user.schema.zod';
 import { ApiResponse } from './dto/response.dto';
+// import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -17,7 +18,7 @@ export class UsersController {
   @Post('register')
   async create(
     @Body(new ZodValidationPipe(CreateUserSchema)) createUserDto: CreateUserDto,
-  ): Promise<ApiResponse<Omit<User, 'password'>>> {
+  ): Promise<ApiResponse<Partial<User>>> {
     return this.userService.createUser(createUserDto);
   }
 
@@ -25,7 +26,16 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body(new ZodValidationPipe(LoginSchema)) loginDto: LoginDto,
-  ): Promise<ApiResponse<{ token: string; user: Omit<User, 'password'> }>> {
+  ): Promise<ApiResponse<{ token: string; user: Partial<User> }>> {
     return this.userService.login(loginDto);
   }
+
+  // @Post(':id/profile-picture')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadProfilePicture(
+  //   @Param('id') userId: string,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   return this.userService.uploadProfilePicture(userId, file);
+  // }
 }

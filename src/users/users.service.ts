@@ -14,11 +14,12 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly configService: ConfigService,
+    // private readonly fileUploadService: FileUploadService,
   ) {}
 
   async createUser(
     createUserDto: CreateUserDto,
-  ): Promise<ApiResponse<Omit<User, 'password'>>> {
+  ): Promise<ApiResponse<Partial<User>>> {
     try {
       // Check if user already exists
       const existingUser = await this.userModel.findOne({
@@ -63,7 +64,7 @@ export class UsersService {
 
   async login(
     loginDto: LoginDto,
-  ): Promise<ApiResponse<{ token: string; user: Omit<User, 'password'> }>> {
+  ): Promise<ApiResponse<{ token: string; user: Partial<User> }>> {
     try {
       // Find user
       const user = await this.userModel.findOne({ email: loginDto.email });
@@ -107,4 +108,50 @@ export class UsersService {
       };
     }
   }
+
+  // async uploadProfilePicture(userId: string, file: Express.Multer.File) {
+  //   try {
+  //     const user = await this.userModel.findById(userId);
+  //     if (!user) {
+  //       throw new Error('User not found');
+  //     }
+
+  //     // If user already has a profile picture, delete the old one
+  //     if (user.profilePicture?.publicId) {
+  //       await this.fileUploadService.deleteFile(user.profilePicture.publicId);
+  //     }
+
+  //     // Upload new picture
+  //     const uploadResult = await this.fileUploadService.uploadFile(
+  //       file,
+  //       'profile-pictures',
+  //     );
+
+  //     // Update user with new profile picture
+  //     const updatedUser = await this.userModel.findByIdAndUpdate(
+  //       userId,
+  //       {
+  //         profilePicture: {
+  //           url: uploadResult.url,
+  //           publicId: uploadResult.public_id,
+  //         },
+  //       },
+  //       { new: true },
+  //     );
+
+  //     return {
+  //       success: true,
+  //       message: 'Profile picture uploaded successfully',
+  //       data: {
+  //         profilePicture: updatedUser.profilePicture,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: 'Failed to upload profile picture',
+  //       error: error.message,
+  //     };
+  //   }
+  // }
 }

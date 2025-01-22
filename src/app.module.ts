@@ -4,6 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { ProjectsService } from './projects/projects.service';
+import { ProjectsController } from './projects/projects.controller';
+import { FileUploadController } from './file-upload/file-upload.controller';
+import { FileUploadService } from './file-upload/file-upload.service';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -22,8 +27,9 @@ import { UsersModule } from './users/users.module';
     }),
 
     UsersModule,
+    FileUploadModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ProjectsController, FileUploadController],
+  providers: [AppService, ProjectsService, FileUploadService],
 })
 export class AppModule {}
