@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
+import { ApiResponse } from 'src/users/dto/response.dto';
 
 interface CloudinaryResponse {
   secure_url: string;
@@ -20,7 +21,11 @@ export class FileUploadService {
   async uploadFile(
     file: Express.Multer.File,
     folder = 'uploads',
-  ): Promise<{ url: string; public_id: string }> {
+  ): Promise<ApiResponse<{ url: string; public_id: string }>> {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('No file provided');
+    }
+
     try {
       const result = await new Promise<CloudinaryResponse>(
         (resolve, reject) => {
@@ -40,11 +45,19 @@ export class FileUploadService {
       );
 
       return {
-        url: result.secure_url,
-        public_id: result.public_id,
+        success: true,
+        message: 'File upload successful',
+        data: {
+          url: result.secure_url,
+          public_id: result.public_id,
+        },
       };
     } catch (error) {
-      throw new Error(`Failed to upload file: ${error.message}`);
+      return {
+        success: false,
+        message: 'Failed to upload file',
+        error: error.message,
+      };
     }
   }
 

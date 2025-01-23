@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { Document } from 'mongoose';
+import { Description } from './project.interface';
 
-export type ProjectDocument = HydratedDocument<Project>;
-
-@Schema()
-export class Project {
+@Schema({ timestamps: true })
+export class Project extends Document {
   @Prop()
   projectName: string;
 
@@ -17,8 +16,8 @@ export class Project {
   @Prop([String])
   tags: string[];
 
-  @Prop()
-  description: string;
+  @Prop({ type: Object })
+  description: Description;
 }
 
-export const UserSchema = SchemaFactory.createForClass(Project);
+export const ProjectSchema = SchemaFactory.createForClass(Project);
